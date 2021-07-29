@@ -1,6 +1,6 @@
-using PolyChaosODE, UnPack, BenchmarkTools
+using PolyChaosODE, DifferentialEquations, Parameters, Distributions, BenchmarkTools
 
-### Performance vs dimensionality test ###
+### Performance vs dimensionality example ###
 
 struct LinearODEComp{T1,T2}
     Λ::T1
@@ -16,28 +16,28 @@ function ode_func_closure!(du,u,comp::LinearODEComp,x,t)
     ode_func!(du,u,Λ,error_vec,x,t)
 end
 
-### benchmark params
 max_dim = 5
 μ = 0.0
 σ = sqrt(2.0) / 2
 
-### run benchmark
+# run benchmark
 for prob_dim in 1:max_dim
     vars = Tuple(Normal(μ,σ) for i in 1:prob_dim)
     Λ = rand(Uniform(-0.50,-0.25),prob_dim)
     error_vec = rand(Uniform(0.025,0.050),prob_dim)
-    ### ODE params
-    u0 = 3.0 .* randn(prob_dim)
+    # ODE params
+    u0 = 10.0 .* randn(prob_dim)
     tspan = (0.0,5.0)
     compartment = LinearODEComp(Λ,error_vec)
-    ### interval for plotting
-    interval_t = tspan[1]:0.01:tspan[2]
+    # interval for plotting
+    step_t = 0.01
+    interval_t = tspan[1]:step_t:tspan[2]
     stoch_galerkin_ode = StochGalerkinODE(ode_func_closure!,prob_dim,vars)
     println("~~~~~~~~~~~~~")
     @show prob_dim
-    ### compile first
-    sol = stoch_galerkin_ode(u0,tspan,compartment;alg=VCABM())
-    ### after it has been compiled, time it
-    @btime stoch_galerkin_ode($u0,$tspan,$compartment;alg=VCABM())
+    # compile first
+    sol = stoch_galerkin_ode(u0,tspan,compartment)
+    # after it has been compiled, time it
+    @btime $stoch_galerkin_ode($u0,$tspan,$compartment;alg=VCABM())
     plot_with_plus_minus_std(stoch_galerkin_ode,interval_t,sol;display_plot=true)
 end

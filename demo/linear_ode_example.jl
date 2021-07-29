@@ -1,6 +1,6 @@
-using PolyChaosODE, Distributions, LaTeXStrings, UnPack, LinearAlgebra, OrdinaryDiffEq, Plots, Test, UnPack
+using PolyChaosODE, Distributions, LaTeXStrings, UnPack, LinearAlgebra, DifferentialEquations, Plots, Test, UnPack
 
-### Linear ODE Example ###
+### Linear ODE example ###
 
 μ = 0.0
 σ = sqrt(2.0) / 2

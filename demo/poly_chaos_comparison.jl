@@ -1,4 +1,4 @@
-using PolyChaosODE, PolyChaos, Plots
+using PolyChaosODE, DifferentialEquations, Distributions, PolyChaos, Plots
 
 ### This package ###
 
