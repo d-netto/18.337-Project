@@ -1,6 +1,6 @@
 using PolyChaosODE, Distributions, LaTeXStrings, UnPack, LinearAlgebra, OrdinaryDiffEq, Plots, Test, UnPack
 
-### Linear ODE Test ###
+### Linear ODE Example ###
 
 μ = 0.0
 σ = sqrt(2.0) / 2
@@ -31,7 +31,7 @@ tspan = (0.0,5.0)
 compartment = ODEComp(Λ,Q,error_vec)
 
 function closed_form_variance(t)
-    # z = Q * u = diag(e^(X_1), e^(X_2),..., e^(X_n)) * z0, with z0 = Q *u0 and X_i ~ N(Λ[i] * t, (σ * error_vec[i] * t)^2)
+    # z = Q * u = diag(e^(X_1), e^(X_2),..., e^(X_n)) * z0, with z0 = Q * u0 and X_i ~ N(Λ[i] * t, (σ * error_vec[i] * t)^2)
     return Q'.^2 * [(expm1((σ * error_vec[i] * t) ^ 2)) * exp(2 * Λ[i] * t + (σ * error_vec[i] * t)^2 ) * (Q * u0)[i]^2 for i in 1:prob_dim]
 end
 
