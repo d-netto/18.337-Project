@@ -97,7 +97,7 @@ end
 @inline function compute_weights_prod(s::StochGalerkinODE,index::CartesianIndex)
   @unpack grid = s
   @unpack quads = grid
-  prod = one(first(first(quads).weights))
+  prod = one(eltype(first(quads).weights))
   @inbounds for i in Base.OneTo(length(index))
     prod *= quads[i].weights[index[i]]
   end

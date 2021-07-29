@@ -1,6 +1,6 @@
 module PolyChaosODE
 
-using OrdinaryDiffEq, Distributions, Plots, OrdinaryDiffEq, FastGaussQuadrature, LinearAlgebra, BenchmarkTools, UnPack, Statistics, LaTeXStrings, PolyChaos
+using OrdinaryDiffEq, Distributions, Plots, FastGaussQuadrature, LinearAlgebra, BenchmarkTools, UnPack, Statistics, LaTeXStrings, PolyChaos
 
 include("grids.jl")
 include("orthogonal_polynomial_basis.jl")

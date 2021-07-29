@@ -1,7 +1,4 @@
-cd(@__DIR__)
-cd("..")
-include(joinpath(pwd(), "src/stochastic_galerkin_odes.jl"))
-include(joinpath(pwd(), "src/utils.jl"))
+using PolyChaosODE, PolyChaos, Plots
 
 ### This package ###
 
@@ -17,17 +14,17 @@ end
 prob_dim = 1
 vars = (Normal(0.0,sqrt(2) / 2),)
 num_polys = (L+1,)
-stoch_galerkin_ode = PolyChaosODE(exp_ode!,prob_dim,vars;num_polys=degrees)
+stoch_galerkin_ode = StochGalerkinODE(exp_ode!,prob_dim,vars;num_polys=num_polys)
 
 x0_ = [x0]
 tspan = (0,tend)
 p = [-0.5, 0.05 * sqrt(2)]
-sol = stoch_galerkin_ode(x0_,tspan,p)
+sol = stoch_galerkin_ode(x0_,tspan,p;alg=Tsit5())
 
-@btime stoch_galerkin_ode($x0_,$tspan,$p)
+@btime stoch_galerkin_ode($x0_,$tspan,$p;alg=Tsit5())
 
 interval_t = 0.0:0.01:tend
-plot_with_pm_std(stoch_galerkin_ode,[sol(t) for t in interval_t],interval_t;display_plot=true)
+plot_with_plus_minus_std(stoch_galerkin_ode,interval_t,sol;display_plot=true)
 
 ### PolyChaos (based on https://timueh.github.io/PolyChaos.jl/stable/random_ode/)###
 
@@ -45,9 +42,9 @@ function ODEgalerkin(du,u,p,t)
 end
 
 probgalerkin = ODEProblem(ODEgalerkin,xinit,tspan,a)
-solgalerkin = solve(probgalerkin)
+solgalerkin = solve(probgalerkin;alg=Tsit5())
 
-@btime solve(probgalerkin)
+@btime solve(probgalerkin; alg = Tsit5())
 
 t, x = solgalerkin.t, solgalerkin.u;
 mean_pce = [ mean(x_, opq) for x_ in x]

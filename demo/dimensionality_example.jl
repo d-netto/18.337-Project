@@ -1,7 +1,4 @@
-cd(@__DIR__)
-cd("..")
-include(joinpath(pwd(), "src/stochastic_galerkin_odes.jl"))
-include(joinpath(pwd(), "src/utils.jl"))
+using PolyChaosODE, UnPack, BenchmarkTools
 
 ### Performance vs dimensionality test ###
 
@@ -35,12 +32,12 @@ for prob_dim in 1:max_dim
     compartment = LinearODEComp(Λ,error_vec)
     ### interval for plotting
     interval_t = tspan[1]:0.01:tspan[2]
-    stoch_galerkin_ode = PolyChaosODE(ode_func_closure!,prob_dim,vars)
+    stoch_galerkin_ode = StochGalerkinODE(ode_func_closure!,prob_dim,vars)
     println("~~~~~~~~~~~~~")
     @show prob_dim
     ### compile first
-    sol = stoch_galerkin_ode(u0,tspan,compartment;alg=VCABM(),alias_u0=true)
+    sol = stoch_galerkin_ode(u0,tspan,compartment;alg=VCABM())
     ### after it has been compiled, time it
-    @btime stoch_galerkin_ode($u0,$tspan,$compartment;alg=VCABM(),alias_u0=true)
-    plot_with_pm_std(stoch_galerkin_ode,[sol(t) for t in interval_t],interval_t;display_plot=true)
+    @btime stoch_galerkin_ode($u0,$tspan,$compartment;alg=VCABM())
+    plot_with_plus_minus_std(stoch_galerkin_ode,interval_t,sol;display_plot=true)
 end
