@@ -1,12 +1,11 @@
 using PolyChaosODE,
     Distributions,
     LaTeXStrings,
-    UnPack,
     LinearAlgebra,
     DifferentialEquations,
+    Parameters,
     Plots,
-    Test,
-    UnPack
+    Test
 
 ### Linear ODE example ###
 
