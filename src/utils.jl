@@ -36,18 +36,17 @@ function compute_diag_variance(s::StochGalerkinODE,interval_t,sol_u)
         push!(cov_matrices, compute_cov_matrix!(s,c,matrix_cache,vector_transpose_cache,dim_,variance_map,sol_u[i]))
     end
     # variances --> from diagonal of cov matrix
-    std = (v -> sqrt.(v)).(diag.(cov_matrices))
-    return expectations, std
+    return expectations, diag.(cov_matrices)
 end
 
 function plot_with_plus_minus_std(s::StochGalerkinODE,interval_t,sol;display_plot=false)
     @unpack dim_ = s
     sol_u = [sol(t) for t in interval_t]
     expectations, variances = compute_diag_variance(s,interval_t,sol_u)
-    lower = expectations .- variances
-    upper = expectations .+ variances
+    lower = expectations .- (v -> sqrt.(v)).(variances)
+    upper = expectations .+ (v -> sqrt.(v)).(variances)
     # initialized plot that will be mutated later
-    pl = plot()
+    pl = plot(;size = (500, 400))
     plts = (lower,expectations,upper)
     colors = [:blue,:green,:red]
     labels = [L"\overline{u}(t) - \sqrt{diag(\Sigma(t))}",L"\overline{u}(t)",L"\overline{u}(t) + \sqrt{diag(\Sigma(t))}"]
@@ -60,7 +59,7 @@ function plot_with_plus_minus_std(s::StochGalerkinODE,interval_t,sol;display_plo
             plot!(pl,interval_t,(r -> getindex(r,j)).(result),color=color,label=label,legend=:outertopright)
         end
     end
-    xlabel!("t")
+    xlabel!(L"t")
     display_plot && display(pl)
     return pl
 end
@@ -144,6 +143,6 @@ function compute_total_order_sobol_indices(s::StochGalerkinODE,sol,interval_t,va
     for (u,t) in zip(sol_u,interval_t)
         push!(std_i,compute_expected_variance_exluding_one_variable!(s,variance_quad_index_cache,variance_index_cache,poly_prod,u,t,variable_index))
     end
-    _, std = compute_diag_variance(s,interval_t,sol_u)
-    return [std_i[j] ./ std[j] for j in Base.OneTo(length(interval_t))]
+    _, variance = compute_diag_variance(s,interval_t,sol_u)
+    return [std_i[j] ./ sqrt.(variance[j]) for j in Base.OneTo(length(interval_t))]
 end
