@@ -25,7 +25,6 @@ struct StochGalerkinODE{
         vars;
         wType = Float64,
         num_polys = nothing,
-        max_deg = nothing,
     )
 
         if num_polys === nothing
@@ -34,15 +33,7 @@ struct StochGalerkinODE{
 
         @assert length(vars) == length(num_polys)
 
-        indices_polys_temp = []
-        for index in CartesianIndices(num_polys)
-            if max_deg === nothing ||
-               mapreduce(i -> index[i] - 1, +, Base.OneTo(length(index))) <= max_deg
-                push!(indices_polys_temp, index)
-            end
-        end
-        indices_polys = Tuple(indices_polys_temp)
-
+        indices_polys = CartesianIndices(num_polys)
         num_vars = length(vars)
 
         poly_basis_temp = Vector{OrthogonalPolyBasis}(undef, num_vars)
