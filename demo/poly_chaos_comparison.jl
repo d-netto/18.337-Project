@@ -1,4 +1,4 @@
-using PolyChaosODE, DifferentialEquations, Distributions, PolyChaos, Plots
+using PolyChaosODE, DifferentialEquations, Distributions, PolyChaos, Plots, BenchmarkTools
 
 ### This package ###
 
@@ -23,7 +23,8 @@ sol = stoch_galerkin_ode(x0_, tspan, p; alg = Tsit5())
 
 @btime stoch_galerkin_ode($x0_, $tspan, $p; alg = Tsit5())
 
-interval_t = 0.0:0.01:tend
+t_step = 0.01
+interval_t = 0.0:t_step:tend
 plot_with_plus_minus_std(stoch_galerkin_ode, interval_t, sol; display_plot = true)
 
 ### PolyChaos (based on https://timueh.github.io/PolyChaos.jl/stable/random_ode/)###

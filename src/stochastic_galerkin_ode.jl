@@ -53,7 +53,7 @@ struct StochGalerkinODE{
                 @assert var.a ≈ -1.0 && var.b ≈ 1.0
                 poly_basis_temp[i] = LegendrePolyBasis(num_polys[i]; wType)
             elseif var isa Normal
-                ## Using physicist's hermite polynomial
+                # Using physicist's hermite polynomial
                 @assert var.μ ≈ 0.0 && var.σ ≈ sqrt(2.0) / 2
                 poly_basis_temp[i] = HermitePolyBasis(num_polys[i]; wType)
             else
