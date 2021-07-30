@@ -66,4 +66,4 @@ plot_arr = mapreduce(transpose, vcat, abs_error_arr)
 
 pl = plot(interval_t[2:end], plot_arr; legend = nothing, size = (500, 400))
 xlabel!(pl, L"t")
-ylabel!(pl, L"\vert \frac{\sigma_{pce} - \sigma_{real}}{\sigma_{real}} \vert")
+ylabel!(pl, L"\left\vert \frac{\sigma_{pce} - \sigma_{real}}{\sigma_{real}} \right\vert")

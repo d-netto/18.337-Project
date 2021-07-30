@@ -19,13 +19,7 @@ struct StochGalerkinODE{
     grid::gridType
     normalization_map::normMapType
 
-    function StochGalerkinODE(
-        ode_func!,
-        dim_,
-        vars;
-        wType = Float64,
-        num_polys = nothing,
-    )
+    function StochGalerkinODE(ode_func!, dim_, vars; wType = Float64, num_polys = nothing)
 
         if num_polys === nothing
             num_polys = Tuple(DEFAULT_NUM_POLYS for i in Base.OneTo(length(vars)))

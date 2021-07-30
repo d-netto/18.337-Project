@@ -1,4 +1,4 @@
-using PolyChaosODE, Distributions, DifferentialEquations
+using PolyChaosODE, DifferentialEquations, Distributions
 
 ### Lotka-Volterra test ###
 

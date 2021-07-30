@@ -2,16 +2,16 @@ __precompile__()
 
 module PolyChaosODE
 
-using DifferentialEquations,
+using BenchmarkTools,
+    DifferentialEquations,
     Distributions,
-    Plots,
     FastGaussQuadrature,
-    LinearAlgebra,
-    BenchmarkTools,
-    Parameters,
-    Statistics,
     LaTeXStrings,
-    PolyChaos
+    LinearAlgebra,
+    Parameters,
+    PolyChaos,
+    Plots,
+    Statistics
 
 include("grids.jl")
 include("orthogonal_polynomial_basis.jl")
