@@ -225,7 +225,7 @@ function compute_expected_variance_exluding_one_variable!(
             # compute (∑_{index_} [C{join_index(i, index_)} * ψ_{index_}(x~i)])^2 * var_{xi}(ψ^{i}_{j}(xi))
             # and add to the running sum stored in "variance_quad_index_cache"
             variance_quad_index_cache .+=
-                variance_index_cache .^ 2 .* (variance_this_poly_family_map[j])
+                variance_index_cache .^ 2 .* (variance_var_index_poly_family_map[j])
         end
         # now that we have, ∑_{j <= num_polys_i}[(∑_{index_} [C{join_index(i, index_)} * ψ_{index_}(x~i)])^2 * var_{xi}(ψ^{i}_{j}(xi))]
         # multiply by the product of weights (excluding the quadrature on the "variable_index" dimension) and add
