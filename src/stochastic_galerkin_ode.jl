@@ -1,4 +1,4 @@
-const DEFAULT_NUM_POLYS = 5
+const DEFAULT_NUM_POLYS = 4
 
 struct StochGalerkinODE{
     odeFuncType,

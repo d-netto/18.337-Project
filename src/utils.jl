@@ -88,6 +88,7 @@ function plot_with_plus_minus_std(
     sol;
     display_plot = false,
 )
+    @unpack dim_ = s
     sol_u = [sol(t) for t in interval_t]
     expectations, variances = compute_expectation_and_diag_variance(s, interval_t, sol_u)
     lower = expectations .- (v -> sqrt.(v)).(variances)
@@ -101,15 +102,21 @@ function plot_with_plus_minus_std(
         L"\overline{u}(t)",
         L"\overline{u}(t) + \sqrt{diag(\Sigma(t))}",
     ]
-    for (result, color, label) in zip(results, colors, labels)
-        plot!(
-            pl,
-            interval_t,
-            mapreduce(transpose, vcat, result),
-            color = color,
-            label = label,
-            legend = :outertopright,
-        )
+    for i in Base.OneTo(length(results))
+        result = results[i]
+        color = colors[i]
+        for j in Base.OneTo(dim_)
+            ## put label only onde
+            label = j == 1 ? labels[i] : nothing
+            plot!(
+                pl,
+                interval_t,
+                (r -> getindex(r, j)).(result),
+                color = color,
+                label = label,
+                legend = :outertopright,
+            )
+        end
     end
     xlabel!(L"t")
     ylabel!(L"u(t)")

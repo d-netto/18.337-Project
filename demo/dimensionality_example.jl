@@ -23,7 +23,7 @@ max_dim = 5
 # run benchmark
 for prob_dim = 1:max_dim
     vars = Tuple(Normal(μ, σ) for i = 1:prob_dim)
-    Λ = rand(Uniform(-0.50, -0.25), prob_dim)
+    Λ = rand(Uniform(-0.200, -0.100), prob_dim)
     error_vec = rand(Uniform(0.025, 0.050), prob_dim)
     # ODE params
     u0 = 10.0 .* randn(prob_dim)
@@ -38,6 +38,6 @@ for prob_dim = 1:max_dim
     # get the solution for plotting
     sol = stoch_galerkin_ode(u0, tspan, compartment)
     # after that, time it
-    @btime $stoch_galerkin_ode($u0, $tspan, $compartment; alg = VCABM())
+    @time stoch_galerkin_ode(u0, tspan, compartment)
     plot_with_plus_minus_std(stoch_galerkin_ode, interval_t, sol; display_plot = true)
 end

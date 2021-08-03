@@ -14,7 +14,7 @@ struct LegendrePolyBasis{T,A} <: OrthogonalPolyBasis
             one_below =
                 ((2 * real_index - 1) / real_index) .*
                 [[zero(wType)]; weights_helper[i-1, :][Base.OneTo(n-1)]]
-            weights_helper[i, :] .= one_below .- two_below
+            weights_helper[i, j] .= one_below .- two_below
         end
         weights = [Tuple(weights_helper[i, j] for j in Base.OneTo(i)) for i in Base.OneTo(n)]
         return new{typeof(n),typeof(weights)}(n, weights)
