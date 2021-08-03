@@ -23,4 +23,3 @@ sol = stoch_galerkin_ode(u0, tspan, p; alg = VCABM())
 plot_with_plus_minus_std(stoch_galerkin_ode, interval_t, sol; display_plot = true)
 
 sobol_indices = compute_total_order_sobol_indices(stoch_galerkin_ode, sol, interval_t, 4)
-@show sobol_indices
