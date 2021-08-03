@@ -1,8 +1,8 @@
 using PolyChaosODE,
     Distributions,
+    DifferentialEquations,
     LaTeXStrings,
     LinearAlgebra,
-    DifferentialEquations,
     Parameters,
     Plots,
     Test
@@ -55,7 +55,7 @@ step_t = 0.01
 interval_t = tspan[1]:step_t:tspan[2]
 sol_u = [sol(t) for t in interval_t]
 
-pce_variance = compute_diag_variance(stoch_galerkin_ode, interval_t, sol_u)[2]
+pce_variance = compute_expectation_and_diag_variance(stoch_galerkin_ode, interval_t, sol_u)[2]
 closed_form = [closed_form_variance(t) for t in interval_t]
 
 error_arr =

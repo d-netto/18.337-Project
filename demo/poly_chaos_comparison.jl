@@ -1,4 +1,4 @@
-using PolyChaosODE, DifferentialEquations, Distributions, PolyChaos, Plots, BenchmarkTools
+using PolyChaosODE, BenchmarkTools, DifferentialEquations, Distributions, PolyChaos, Plots
 
 ### This package ###
 

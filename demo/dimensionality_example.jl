@@ -1,4 +1,4 @@
-using PolyChaosODE, DifferentialEquations, Parameters, Distributions, BenchmarkTools
+using PolyChaosODE, BenchmarkTools, DifferentialEquations, Distributions, Parameters
 
 ### Performance vs dimensionality example ###
 
@@ -35,9 +35,9 @@ for prob_dim = 1:max_dim
     stoch_galerkin_ode = StochGalerkinODE(ode_func_closure!, prob_dim, vars)
     println("~~~~~~~~~~~~~")
     @show prob_dim
-    # compile first
+    # get the solution for plotting
     sol = stoch_galerkin_ode(u0, tspan, compartment)
-    # after it has been compiled, time it
+    # after that, time it
     @btime $stoch_galerkin_ode($u0, $tspan, $compartment; alg = VCABM())
     plot_with_plus_minus_std(stoch_galerkin_ode, interval_t, sol; display_plot = true)
 end

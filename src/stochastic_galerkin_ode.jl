@@ -59,7 +59,7 @@ struct StochGalerkinODE{
                     (x -> poly_basis[i](x, index[i] - 1)^2).(grid.quads[i].nodes),
                 ),
                 *,
-                1:length(index),
+                Base.OneTo(length(index)),
             )
         end
 
