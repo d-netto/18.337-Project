@@ -20,6 +20,12 @@ interval_t = tspan[1]:tstep:tspan[2]
 p = [1.5, 1.0, 3.0, 1.0]
 
 sol = stoch_galerkin_ode(u0, tspan, p; alg = VCABM())
-plot_with_plus_minus_std(stoch_galerkin_ode, interval_t, sol; display_plot = true)
 
-sobol_indices = compute_total_order_sobol_indices(stoch_galerkin_ode, sol, interval_t, 4)
+const VAR_INDEX = 4
+const NUMBER_SAMPLES = 10000
+
+sobol_indices_ode = compute_total_order_sobol_indices(stoch_galerkin_ode, sol, interval_t, VAR_INDEX)
+@show sobol_indices_ode
+
+sobol_indices_mc = mc_gsa_estimate(stoch_galerkin_ode, VAR_INDEX, NUMBER_SAMPLES, interval_t, u0, tspan, p)
+@show sobol_indices_mc
