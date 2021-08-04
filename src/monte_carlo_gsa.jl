@@ -1,6 +1,15 @@
 using LinearAlgebra
 
-function mc_gsa_estimate(s::StochGalerkinODE, var_index, num_samples, interval_t, u0, tspan, p; kwargs...)
+function mc_gsa_estimate(
+    s::StochGalerkinODE,
+    var_index,
+    num_samples,
+    interval_t,
+    u0,
+    tspan,
+    p;
+    kwargs...,
+)
     @unpack ode_func!, dim_, vars = s
     A = zeros(num_samples, length(vars))
     B = zeros(num_samples, length(vars))
@@ -16,12 +25,18 @@ function mc_gsa_estimate(s::StochGalerkinODE, var_index, num_samples, interval_t
     Y_B = zeros(num_samples, length(interval_t), dim_)
     Y_C = zeros(num_samples, length(interval_t), dim_)
     for i in Base.OneTo(num_samples)
-        x_A = A[i, :]
-        x_B = B[i, :]
-        x_C = C[i, :]
-        sol_A = solve(ODEProblem((du, u, p, t) -> ode_func!(du, u, p, x_A, t), u0, tspan, p), kwargs...)
-        sol_B = solve(ODEProblem((du, u, p, t) -> ode_func!(du, u, p, x_B, t), u0, tspan, p), kwargs...)
-        sol_C = solve(ODEProblem((du, u, p, t) -> ode_func!(du, u, p, x_C, t), u0, tspan, p), kwargs...)
+        sol_A = solve(
+            ODEProblem((du, u, p, t) -> ode_func!(du, u, p, A[i, :], t), u0, tspan, p),
+            kwargs...,
+        )
+        sol_B = solve(
+            ODEProblem((du, u, p, t) -> ode_func!(du, u, p, B[i, :], t), u0, tspan, p),
+            kwargs...,
+        )
+        sol_C = solve(
+            ODEProblem((du, u, p, t) -> ode_func!(du, u, p, C[i, :], t), u0, tspan, p),
+            kwargs...,
+        )
         for j in Base.OneTo(length(interval_t))
             Y_A[i, j, :] .= sol_A(interval_t[j])
             Y_B[i, j, :] .= sol_B(interval_t[j])
