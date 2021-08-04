@@ -1,4 +1,4 @@
-using PolyChaosODE, DifferentialEquations, Distributions
+using PolyChaosODE, BenchmarkTools, DifferentialEquations, Distributions
 
 ### Lotka-Volterra test ###
 
@@ -22,7 +22,7 @@ p = [1.5, 1.0, 3.0, 1.0]
 sol = stoch_galerkin_ode(u0, tspan, p; alg = VCABM())
 
 const VAR_INDEX = 4
-const NUMBER_SAMPLES = 50000
+const NUMBER_SAMPLES = 10000
 
 sobol_indices_ode = mapreduce(
     transpose,
@@ -34,8 +34,26 @@ sobol_indices_ode = mapreduce(
 ]
 @show sobol_indices_ode
 
-sobol_indices_mc =
-    mc_gsa_estimate(stoch_galerkin_ode, VAR_INDEX, NUMBER_SAMPLES, interval_t, u0, tspan, p)
+sobol_indices_mc = mc_gsa_estimate_total_indices(
+    stoch_galerkin_ode,
+    VAR_INDEX,
+    NUMBER_SAMPLES,
+    interval_t,
+    u0,
+    tspan,
+    p,
+)
 @show sobol_indices_mc
+
+@btime compute_total_order_sobol_indices(stoch_galerkin_ode, sol, interval_t, VAR_INDEX)
+@btime mc_gsa_estimate_total_indices(
+    stoch_galerkin_ode,
+    VAR_INDEX,
+    NUMBER_SAMPLES,
+    interval_t,
+    u0,
+    tspan,
+    p,
+)
 
 @show sobol_indices_ode .- sobol_indices_mc

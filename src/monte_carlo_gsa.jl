@@ -1,6 +1,6 @@
 using LinearAlgebra
 
-function mc_gsa_estimate(
+function mc_gsa_estimate_total_indices(
     s::StochGalerkinODE,
     var_index,
     num_samples,
@@ -22,7 +22,6 @@ function mc_gsa_estimate(
     C = deepcopy(A)
     C[:, var_index] .= B[:, var_index]
     Y_A = zeros(num_samples, length(interval_t), dim_)
-    Y_B = zeros(num_samples, length(interval_t), dim_)
     Y_C = zeros(num_samples, length(interval_t), dim_)
     for i in Base.OneTo(num_samples)
         sol_A = solve(
@@ -39,7 +38,6 @@ function mc_gsa_estimate(
         )
         for j in Base.OneTo(length(interval_t))
             Y_A[i, j, :] .= sol_A(interval_t[j])
-            Y_B[i, j, :] .= sol_B(interval_t[j])
             Y_C[i, j, :] .= sol_C(interval_t[j])
         end
     end

@@ -124,6 +124,7 @@ function plot_with_plus_minus_std(
     return pl
 end
 
+# TODO: make this less allocation heavy
 function compute_expected_variance_exluding_one_variable!(
     s::StochGalerkinODE,
     variance_quad_index_cache,
@@ -238,6 +239,7 @@ function compute_expected_variance_exluding_one_variable!(
     return running_sum_expectation_of_variance
 end
 
+# TODO: make this less allocation heavy
 function compute_total_order_sobol_indices(
     s::StochGalerkinODE,
     sol,
