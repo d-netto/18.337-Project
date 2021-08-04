@@ -253,7 +253,7 @@ function compute_total_order_sobol_indices(
     sz_others =
         Tuple(num_polys[i] for i in Base.OneTo(length(num_polys)) if i != variable_index)
     # stores E_{x~i}[Var_{xi}(y|x~i)]
-    std_i = []
+    var_i = []
     # pre-allocated caches
     variance_quad_index_cache = zeros(uType, dim_)
     variance_index_cache = zeros(uType, dim_)
@@ -262,19 +262,17 @@ function compute_total_order_sobol_indices(
     # (quadrature weights don't include constant factors from pdf's)
     for u in sol_u
         push!(
-            std_i,
-            sqrt.(
-                compute_expected_variance_exluding_one_variable!(
-                    s,
-                    variance_quad_index_cache,
-                    variance_index_cache,
-                    poly_prod,
-                    u,
-                    variable_index,
-                ),
+            var_i,
+            compute_expected_variance_exluding_one_variable!(
+                s,
+                variance_quad_index_cache,
+                variance_index_cache,
+                poly_prod,
+                u,
+                variable_index,
             ),
         )
     end
     _, variance = compute_expectation_and_diag_variance(s, interval_t, sol_u)
-    return [std_i[j] ./ sqrt.(variance[j]) for j in Base.OneTo(length(interval_t))]
+    return [var_i[j] ./ variance[j] for j in Base.OneTo(length(interval_t))]
 end
