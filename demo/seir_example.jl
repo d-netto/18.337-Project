@@ -1,4 +1,4 @@
-using PolyChaosODE, DifferentialEquations
+using PolyChaosODE, BenchmarkTools, DifferentialEquations, Distributions
 
 ### Test based on the example provided at https://julia.quantecon.org/continuous_time/seir_model.html ###
 const _e = 0.050
@@ -16,9 +16,8 @@ function seir!(du, u, p, x, t)
 end
 
 vars = Tuple(Normal(μ, σ) for i = 1:3)
-num_polys = Tuple(5 for i = 1:3)
 dim_ = 4
-stoch_galerkin_ode = StochGalerkinODE(seir!, dim_, vars; num_polys = num_polys)
+stoch_galerkin_ode = StochGalerkinODE(seir!, dim_, vars)
 
 i_0 = 1E-7
 e_0 = 4.0 * i_0
@@ -27,13 +26,13 @@ r_0 = 0.0
 
 u0 = [s_0, e_0, i_0, r_0]
 tspan = (0.0, 350.0)
-tstep = 0.001
+tstep = 0.1
 interval_t = tspan[1]:tstep:tspan[2]
 p = [1 / 18, 1 / 5.2, 3.0]
 
 sol = stoch_galerkin_ode(u0, tspan, p; alg = VCABM())
 
-const VAR_INDEX = 4
+const VAR_INDEX = 3
 const NUMBER_SAMPLES = 10000
 
 sobol_indices_ode = mapreduce(

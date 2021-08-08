@@ -1,4 +1,4 @@
-using LinearAlgebra
+using DifferentialEquations, LinearAlgebra
 
 function mc_gsa_estimate_total_indices(
     s::StochGalerkinODE,
@@ -26,10 +26,6 @@ function mc_gsa_estimate_total_indices(
     for i in Base.OneTo(num_samples)
         sol_A = solve(
             ODEProblem((du, u, p, t) -> ode_func!(du, u, p, A[i, :], t), u0, tspan, p),
-            kwargs...,
-        )
-        sol_B = solve(
-            ODEProblem((du, u, p, t) -> ode_func!(du, u, p, B[i, :], t), u0, tspan, p),
             kwargs...,
         )
         sol_C = solve(

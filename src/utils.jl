@@ -248,19 +248,13 @@ function compute_total_order_sobol_indices(
     variance_index_cache = zeros(uType, dim_)
     poly_prod = zeros(uType, sz_others)
     # dimension's permutation
-    perm = (
-        1,
-        variable_index + 1,
-        (i for i in 2:(num_vars+1) if i != (variable_index + 1))...,
-    )
+    perm =
+        (1, variable_index + 1, (i for i in 2:(num_vars+1) if i != (variable_index + 1))...)
     for u in sol_u
         # permute dimensions to not create an extra CartesianIndex during the update
         # of "variance_index_cache" (line 211) in the loop of the function above, reducing
         # allocations in this way
-        u_ = PermutedDimsArray(
-            u,
-            perm,
-        )
+        u_ = PermutedDimsArray(u, perm)
         push!(
             var_i,
             compute_expected_variance_exluding_one_variable!(
