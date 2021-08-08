@@ -106,7 +106,7 @@ function plot_with_plus_minus_std(
         result = results[i]
         color = colors[i]
         for j in Base.OneTo(dim_)
-            ## put label only onde
+            # put label only once
             label = j == 1 ? labels[i] : nothing
             plot!(
                 pl,
@@ -247,17 +247,19 @@ function compute_total_order_sobol_indices(
     variance_quad_index_cache = zeros(uType, dim_)
     variance_index_cache = zeros(uType, dim_)
     poly_prod = zeros(uType, sz_others)
+    # dimension's permutation
+    perm = (
+        1,
+        variable_index + 1,
+        (i for i in 2:(num_vars+1) if i != (variable_index + 1))...,
+    )
     for u in sol_u
         # permute dimensions to not create an extra CartesianIndex during the update
         # of "variance_index_cache" (line 211) in the loop of the function above, reducing
         # allocations in this way
         u_ = PermutedDimsArray(
             u,
-            ((
-                1,
-                variable_index + 1,
-                (i for i in 2:(num_vars+1) if i != (variable_index + 1))...,
-            )),
+            perm,
         )
         push!(
             var_i,
