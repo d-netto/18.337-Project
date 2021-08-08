@@ -21,7 +21,7 @@ p = [1.5, 1.0, 3.0, 1.0]
 
 sol = stoch_galerkin_ode(u0, tspan, p; alg = VCABM())
 
-const VAR_INDEX = 4
+const VAR_INDEX = 3
 const NUMBER_SAMPLES = 10000
 
 sobol_indices_ode = mapreduce(
@@ -32,7 +32,6 @@ sobol_indices_ode = mapreduce(
     2:end,
     :,
 ]
-@show sobol_indices_ode
 
 sobol_indices_mc = mc_gsa_estimate_total_indices(
     stoch_galerkin_ode,
@@ -43,8 +42,8 @@ sobol_indices_mc = mc_gsa_estimate_total_indices(
     tspan,
     p,
 )
-@show sobol_indices_mc
 
+@btime stoch_galerkin_ode(u0, tspan, p; alg = VCABM())
 @btime compute_total_order_sobol_indices(stoch_galerkin_ode, sol, interval_t, VAR_INDEX)
 @btime mc_gsa_estimate_total_indices(
     stoch_galerkin_ode,

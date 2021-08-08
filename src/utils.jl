@@ -124,23 +124,21 @@ function plot_with_plus_minus_std(
     return pl
 end
 
-# TODO: make this less allocation heavy
 function compute_expected_variance_exluding_one_variable!(
     s::StochGalerkinODE,
     variance_quad_index_cache,
     variance_index_cache,
     poly_prod,
-    u,
+    u_,
+    sz_others,
     variable_index,
 )
     @unpack dim_, num_polys, poly_basis, grid = s
     @unpack quads = grid
-    uType = eltype(u)
+    uType = eltype(u_)
     num_vars = length(num_polys)
     # number of polynomials for the dimension corresponding to "variable_index"
     num_polys_var_index_dim = num_polys[variable_index]
-    # number of polynomials for each dimension other than the one corresponding to "variable_index"
-    sz_others = Tuple(num_polys[i] for i in Base.OneTo(num_vars) if i != variable_index)
     # map j -> Var_(xi)[ψ^(i)_{j}(xi)], 1 <= j <= num_polys_var_index_dim, where ψ^(i) is the orthogonal
     #  polynomial family on the dimension corresponding to "variance_index"
     variance_var_index_poly_family_map = zeros(uType, num_polys[variable_index])
@@ -170,43 +168,34 @@ function compute_expected_variance_exluding_one_variable!(
         variance_var_index_poly_family_map[j] = variance_var_index_jth_poly
     end
     # helper funcion to shift all indices greater than variable_index one position to the left
-    shift_index = j -> j < variable_index ? j : j - 1
-    # helper function to attach the value i at the position "variable_index" of index and keeps the rest
-    # example: variable_index = 2 --> join_index(7, CartesianIndex(2,3)) = CartesianIndex(2,7,3)
-    join_index =
-        (i, index) -> CartesianIndex(
-            Tuple(
-                j == variable_index ? i : index[shift_index(j)] for
-                j in Base.OneTo(length(index) + 1)
-            ),
-        )
+    shift_index = j -> (j < variable_index) ? j : j - 1
     running_sum_expectation_of_variance = zeros(uType, dim_)
     # normalization constant considering distribution of other vars
     # (quadrature weights don't include constant factors from pdf's)
     norm_const_other_vars = zero(uType)
-    for quad_index in CartesianIndices(sz_others)
+    @inbounds for quad_index in CartesianIndices(sz_others)
         fill!(variance_quad_index_cache, zero(uType))
         # computes product of weights at the position determined by "quad_index"
-        prod_weights = mapreduce(
-            j ->
-                j == variable_index ? one(uType) :
-                quads[j].weights[quad_index[shift_index(j)]],
-            *,
-            Base.OneTo(num_vars),
-        )
+        prod_weights = one(uType)
+        @inbounds for j in Base.OneTo(num_vars)
+            @unpack weights = quads[j]
+            if j != variable_index
+                prod_weights *= weights[quad_index[shift_index(j)]]
+            end
+        end
         norm_const_other_vars += prod_weights
         # pre-compute product of polynomials of multi-index "index" at the value determined by "quad_index"
-        for index in CartesianIndices(sz_others)
-            poly_prod[index] = mapreduce(
-                j ->
-                    j == variable_index ? one(uType) :
-                    poly_basis[j](
-                        quads[j].nodes[quad_index[shift_index(j)]],
+        @inbounds for index in CartesianIndices(sz_others)
+            poly_prod[index] = one(uType)
+            for j in Base.OneTo(num_vars)
+                @unpack nodes = quads[j]
+                if j != variable_index
+                    poly_prod[index] *= poly_basis[j](
+                        nodes[quad_index[shift_index(j)]],
                         index[shift_index(j)] - 1,
-                    ),
-                *,
-                Base.OneTo(num_vars),
-            )
+                    )
+                end
+            end
         end
         # now compute variance considering other variables
         # we use the following identities in the loop below (note that polynomials of different indices are uncorrelated and i = variable_index,
@@ -214,14 +203,12 @@ function compute_expected_variance_exluding_one_variable!(
         # Y = ∑_{j <= num_polys_i}[(∑_{index_} [C{join_index(i, index_)} * ψ_{index_}(x~i)]) * ψ^{i}_{j}(xi)]
         # --> Var_{xi}(Y|x~i) = ∑_{j <= num_polys_i}[(∑_{index_} [C{join_index(i, index_)} * ψ_{index_}(x~i)])^2 * var_{xi}(ψ^{i}_{j}(xi))]
         # where index_ spans over CartesianIndices(sz_others) (the number of polynomials in the other dimensions)
-        for j in Base.OneTo(num_polys_var_index_dim)
+        @inbounds for j in Base.OneTo(num_polys_var_index_dim)
             # variance_index_cache receives the term ∑_{index_} [C{join_index(i, index_)} * ψ_{index_}(x~i)]
             fill!(variance_index_cache, zero(uType))
-            variance_index_cache .= mapreduce(
-                index_ -> u[:, join_index(j, index_)] .* poly_prod[index_],
-                .+,
-                CartesianIndices(sz_others),
-            )
+            @inbounds for index_ in CartesianIndices(sz_others)
+                variance_index_cache .+= (@view u_[:, j, index_]) .* poly_prod[index_]
+            end
             # now that we have ∑_{index_} [C{join_index(i, index_)} * ψ_{index_}(x~i)],
             # compute (∑_{index_} [C{join_index(i, index_)} * ψ_{index_}(x~i)])^2 * var_{xi}(ψ^{i}_{j}(xi))
             # and add to the running sum stored in "variance_quad_index_cache"
@@ -239,7 +226,6 @@ function compute_expected_variance_exluding_one_variable!(
     return running_sum_expectation_of_variance
 end
 
-# TODO: make this less allocation heavy
 function compute_total_order_sobol_indices(
     s::StochGalerkinODE,
     sol,
@@ -251,6 +237,7 @@ function compute_total_order_sobol_indices(
     @unpack dim_, num_polys, indices_polys, poly_basis, grid = s
     @unpack quads, quad_indices = grid
     uType = eltype(eltype(sol_u))
+    num_vars = length(num_polys)
     # number of polys for all variables except for the one we are computing the Sobol index
     sz_others =
         Tuple(num_polys[i] for i in Base.OneTo(length(num_polys)) if i != variable_index)
@@ -260,9 +247,18 @@ function compute_total_order_sobol_indices(
     variance_quad_index_cache = zeros(uType, dim_)
     variance_index_cache = zeros(uType, dim_)
     poly_prod = zeros(uType, sz_others)
-    # normalization constant considering joint distribution of other vars
-    # (quadrature weights don't include constant factors from pdf's)
     for u in sol_u
+        # permute dimensions to not create an extra CartesianIndex during the update
+        # of "variance_index_cache" (line 211) in the loop of the function above, reducing
+        # allocations in this way
+        u_ = PermutedDimsArray(
+            u,
+            ((
+                1,
+                variable_index + 1,
+                (i for i in 2:(num_vars+1) if i != (variable_index + 1))...,
+            )),
+        )
         push!(
             var_i,
             compute_expected_variance_exluding_one_variable!(
@@ -270,7 +266,8 @@ function compute_total_order_sobol_indices(
                 variance_quad_index_cache,
                 variance_index_cache,
                 poly_prod,
-                u,
+                u_,
+                sz_others,
                 variable_index,
             ),
         )
