@@ -21,7 +21,7 @@ p = [1.5, 1.0, 3.0, 1.0]
 
 sol = stoch_galerkin_ode(u0, tspan, p; alg = VCABM())
 
-const VAR_INDEX = 3
+const VAR_INDEX = 4
 const NUMBER_SAMPLES = 10000
 
 sobol_indices_ode = mapreduce(

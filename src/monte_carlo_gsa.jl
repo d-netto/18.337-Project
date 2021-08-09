@@ -1,4 +1,4 @@
-using DifferentialEquations, LinearAlgebra
+using LinearAlgebra
 
 function mc_gsa_estimate_total_indices(
     s::StochGalerkinODE,
@@ -25,11 +25,11 @@ function mc_gsa_estimate_total_indices(
     Y_C = zeros(num_samples, length(interval_t), dim_)
     for i in Base.OneTo(num_samples)
         sol_A = solve(
-            ODEProblem((du, u, p, t) -> ode_func!(du, u, p, A[i, :], t), u0, tspan, p),
+            ODEProblem((du, u, p, t) -> ode_func!(du, u, p, (@view A[i, :]), t), u0, tspan, p),
             kwargs...,
         )
         sol_C = solve(
-            ODEProblem((du, u, p, t) -> ode_func!(du, u, p, C[i, :], t), u0, tspan, p),
+            ODEProblem((du, u, p, t) -> ode_func!(du, u, p, (@view C[i, :]), t), u0, tspan, p),
             kwargs...,
         )
         for j in Base.OneTo(length(interval_t))
@@ -42,7 +42,7 @@ function mc_gsa_estimate_total_indices(
         for dim_index in Base.OneTo(dim_)
             Y_A_ = @view Y_A[:, t_index, dim_index]
             Y_C_ = @view Y_C[:, t_index, dim_index]
-            expectation_not_xi = dot(Y_A_ - Y_C_, Y_A_ - Y_C_) / (2 * num_samples)
+            expectation_not_xi = dot(Y_A_ .- Y_C_, Y_A_ .- Y_C_) / (2 * num_samples)
             variance = dot(Y_A_, Y_A_) / num_samples - (sum(Y_A_) / num_samples)^2
             sobol_indices[t_index, dim_index] = expectation_not_xi / variance
         end

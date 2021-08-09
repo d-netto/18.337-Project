@@ -1,7 +1,7 @@
 using PolyChaosODE, BenchmarkTools, DifferentialEquations, Distributions
 
 ### Test based on the example provided at https://julia.quantecon.org/continuous_time/seir_model.html ###
-const _e = 0.050
+const _e = 0.01
 μ = 0.0
 σ = sqrt(2.0) / 2
 
