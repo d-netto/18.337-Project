@@ -9,8 +9,8 @@ using PolyChaosODE,
 
 ### Linear ODE example ###
 
-μ = 0.0
-σ = sqrt(2.0) / 2
+const μ = 0.0
+const σ = sqrt(2.0) / 2
 prob_dim = 4
 
 struct ODEComp{T1,T2,T3}
@@ -65,6 +65,12 @@ abs_error_arr = (x -> abs.(x)).(error_arr)
 
 plot_arr = mapreduce(transpose, vcat, abs_error_arr)
 
-pl = plot(interval_t[2:end], plot_arr; label = [L"err[\sigma_1]" L"err[\sigma_2]" L"err[\sigma_3]" L"err[\sigma_4]"], legend = :outertopright, size = (500, 400))
-xlabel!(pl, L"t")
-ylabel!(pl, L"\left\vert \frac{\sigma_{pce} - \sigma_{real}}{\sigma_{real}} \right\vert")
+plot(
+    interval_t[2:end],
+    plot_arr;
+    label = [L"err[\sigma_1]" L"err[\sigma_2]" L"err[\sigma_3]" L"err[\sigma_4]"],
+    legend = :outertopright,
+    size = (500, 400),
+)
+xlabel!(L"t")
+ylabel!(L"\left\vert \frac{\sigma_{pce} - \sigma_{real}}{\sigma_{real}} \right\vert")

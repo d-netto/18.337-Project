@@ -25,11 +25,21 @@ function mc_gsa_estimate_total_indices(
     Y_C = zeros(num_samples, length(interval_t), dim_)
     for i in Base.OneTo(num_samples)
         sol_A = solve(
-            ODEProblem((du, u, p, t) -> ode_func!(du, u, p, (@view A[i, :]), t), u0, tspan, p),
+            ODEProblem(
+                (du, u, p, t) -> ode_func!(du, u, p, (@view A[i, :]), t),
+                u0,
+                tspan,
+                p,
+            ),
             kwargs...,
         )
         sol_C = solve(
-            ODEProblem((du, u, p, t) -> ode_func!(du, u, p, (@view C[i, :]), t), u0, tspan, p),
+            ODEProblem(
+                (du, u, p, t) -> ode_func!(du, u, p, (@view C[i, :]), t),
+                u0,
+                tspan,
+                p,
+            ),
             kwargs...,
         )
         for j in Base.OneTo(length(interval_t))
