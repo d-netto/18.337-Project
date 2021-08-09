@@ -61,7 +61,7 @@ plot(
     ((x, y) -> log10.(abs.(x .- y) ./ y)).(sobol_indices_pce, sobol_indices_mc_100k);
     label = [L"err\left(\hat{S}_{1, 4}^{(PCE)}\right)" L"err\left(\hat{S}_{2, 4}^{(PCE)}\right)"],
     size = (500, 400),
-    ylims = (-5, -1)
+    ylims = (-5, -1),
 )
 
 xlabel!(L"t")
@@ -72,7 +72,7 @@ plot(
     ((x, y) -> log10.(abs.(x .- y) ./ y)).(sobol_indices_mc_10k, sobol_indices_mc_100k),
     label = [L"err\left(\hat{S}_{1, 4}^{(MC)}\right)" L"err\left(\hat{S}_{2, 4}^{(MC)}\right)"],
     size = (500, 400),
-    ylims = (-5, -1)
+    ylims = (-5, -1),
 )
 
 xlabel!(L"t")
