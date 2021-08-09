@@ -1,6 +1,6 @@
 using PolyChaosODE, BenchmarkTools, LaTeXStrings, DifferentialEquations, Distributions
 
-### Lotka-Volterra test ###
+### Lotka-Volterra example ###
 
 const e_ = 0.050
 const μ = 0.0
