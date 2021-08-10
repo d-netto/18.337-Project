@@ -74,3 +74,5 @@ plot(
 )
 xlabel!(L"t")
 ylabel!(L"\left\vert \frac{\sigma_{pce} - \sigma_{real}}{\sigma_{real}} \right\vert")
+
+# savefig("linear_ode_example.png")
