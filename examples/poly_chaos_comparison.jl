@@ -18,14 +18,33 @@ stoch_galerkin_ode = StochGalerkinODE(exp_ode!, prob_dim, vars; num_polys = num_
 
 x0_ = [x0]
 tspan = (0, tend)
+# sqrt(2) factor in the second term because we are using the Physicist's Hermite polynomials instead of the Probabilist's
 p = [-0.5, 0.05 * sqrt(2)]
-sol = stoch_galerkin_ode(x0_, tspan, p; alg = Tsit5())
-
-@btime stoch_galerkin_ode($x0_, $tspan, $p; alg = Tsit5())
+sol = stoch_galerkin_ode(x0_, tspan, p; alg = VCABM())
 
 t_step = 0.01
 interval_t = 0.0:t_step:tend
-plot_with_plus_minus_std(stoch_galerkin_ode, interval_t, sol; display_plot = true)
+std_this =
+    (
+        x -> sqrt.(x)
+    ).(
+        compute_expectation_and_diag_variance(
+            stoch_galerkin_ode,
+            interval_t,
+            [sol(t) for t in interval_t],
+        )[2],
+    )
+
+@btime stoch_galerkin_ode($x0_, $tspan, $p; alg = VCABM())
+@btime (
+    x -> sqrt.(x)
+).(
+    compute_expectation_and_diag_variance(
+        stoch_galerkin_ode,
+        interval_t,
+        [sol(t) for t in interval_t],
+    )[2],
+)
 
 ### PolyChaos (based on https://timueh.github.io/PolyChaos.jl/stable/random_ode/)###
 
@@ -45,13 +64,15 @@ function ODEgalerkin(du, u, p, t)
 end
 
 probgalerkin = ODEProblem(ODEgalerkin, xinit, tspan, a)
-solgalerkin = solve(probgalerkin; alg = Tsit5())
-
-@btime solve(probgalerkin; alg = Tsit5())
+solgalerkin = solve(probgalerkin; alg = VCABM())
 
 t, x = solgalerkin.t, solgalerkin.u;
-mean_pce = [mean(x_, opq) for x_ in x]
-std_pce = [std(x_, opq) for x_ in x]
+mean_poly_chaos = [mean(x_, opq) for x_ in x]
+std_poly_chaos = [std(x_, opq) for x_ in x]
+
+@btime solve(probgalerkin; alg = VCABM())
+@btime [mean(x_, opq) for x_ in x]
+@btime [std(x_, opq) for x_ in x]
 
 plot(t, mean_pce .- std_pce)
 plot!(t, mean_pce)

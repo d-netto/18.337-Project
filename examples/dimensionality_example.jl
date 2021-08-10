@@ -24,7 +24,7 @@ max_dim = 5
 for prob_dim = 1:max_dim
     vars = Tuple(Normal(μ, σ) for i = 1:prob_dim)
     Λ = rand(Uniform(-0.200, -0.100), prob_dim)
-    error_vec = rand(Uniform(0.025, 0.050), prob_dim)
+    error_vec = error_vec = rand(Uniform(0.050, 0.100), prob_dim)
     # ODE params
     u0 = 10.0 .* randn(prob_dim)
     tspan = (0.0, 5.0)
@@ -39,5 +39,13 @@ for prob_dim = 1:max_dim
     sol = stoch_galerkin_ode(u0, tspan, compartment)
     # after that, time it
     @time stoch_galerkin_ode(u0, tspan, compartment)
-    plot_with_plus_minus_std(stoch_galerkin_ode, interval_t, sol; display_plot = true)
+    @btime (
+        x -> sqrt.(x)
+    ).(
+        compute_expectation_and_diag_variance(
+            stoch_galerkin_ode,
+            interval_t,
+            [sol(t) for t in interval_t],
+        )[2],
+    )
 end
