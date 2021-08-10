@@ -21,7 +21,7 @@ end
 
 vars = Tuple(Normal(μ, σ) for i = 1:3)
 dim_ = 4
-stoch_galerkin_ode = StochGalerkinODE(seir!, dim_, vars, num_polys = (2, 2, 2))
+stoch_galerkin_ode = StochGalerkinODE(seir!, dim_, vars)
 
 i_0 = 1E-7
 e_0 = 4.0 * i_0
@@ -39,8 +39,6 @@ interval_t = interval_t_start:tstep:tspan[2]
 sol = stoch_galerkin_ode(u0, tspan, p; alg = VCABM())
 
 const VAR_INDEX = 3
-const ONE_K = 1000
-const TWENTY_K = 20000
 
 sobol_indices_pce = mapreduce(
     transpose,
@@ -54,7 +52,7 @@ sobol_indices_pce = mapreduce(
 sobol_indices_mc_1k = mc_gsa_estimate_total_indices(
     stoch_galerkin_ode,
     VAR_INDEX,
-    ONE_K,
+    1000,
     interval_t,
     u0,
     tspan,
@@ -64,7 +62,7 @@ sobol_indices_mc_1k = mc_gsa_estimate_total_indices(
 sobol_indices_mc_20k = mc_gsa_estimate_total_indices(
     stoch_galerkin_ode,
     VAR_INDEX,
-    TWENTY_K,
+    20000,
     interval_t,
     u0,
     tspan,
@@ -83,7 +81,7 @@ plot(
 xlabel!(L"t")
 ylabel!(L"\log_{10}\left\vert \frac{\hat{S} - S}{S} \right\vert")
 
-# savefig("seir_pce.png")
+savefig("seir_pce.png")
 
 plot(
     interval_t[2:end],
@@ -97,7 +95,7 @@ plot(
 xlabel!(L"t")
 ylabel!(L"\log_{10}\left\vert \frac{\hat{S} - S}{S} \right\vert")
 
-# savefig("seir_mc.png")
+savefig("seir_mc.png")
 
 @btime stoch_galerkin_ode(u0, tspan, p; alg = VCABM())
 @btime compute_total_order_sobol_indices(stoch_galerkin_ode, sol, interval_t, VAR_INDEX)
