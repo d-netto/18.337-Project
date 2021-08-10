@@ -2,10 +2,12 @@ using PolyChaosODE, BenchmarkTools, LaTeXStrings, DifferentialEquations, Distrib
 
 ### Lotka-Volterra example ###
 
-const e_1 = rand(Uniform(0.050, 0.100))
-const e_2 = rand(Uniform(0.050, 0.100))
-const e_3 = rand(Uniform(0.050, 0.100))
-const e_4 = rand(Uniform(0.050, 0.100))
+# Values randomly sampled from Uniform(0.005, 0.01)
+const e_1 = 0.09190709256277678
+const e_2 = 0.080445347251208
+const e_3 = 0.08337864408351067
+const e_4 = 0.09539376797393989
+
 μ = 0.0
 σ = sqrt(2.0) / 2
 
@@ -72,7 +74,7 @@ savefig("lk_pce.png")
 plot(
     interval_t[2:end],
     ((x, y) -> log10.(abs.(x .- y) ./ y)).(sobol_indices_mc_10k, sobol_indices_mc_100k),
-    label = [L"err\left(\hat{S}_{1, 4}^{(MC)}\right)" L"err\left(\hat{S}_{2, 4}^{(MC)}\right)"],
+    label = [L"\log_{10} err\left(\hat{S}_{1, 4}^{(MC)}\right)" L"\log_{10} err\left(\hat{S}_{2, 4}^{(MC)}\right)"],
     legend = :outertopright,
     size = (500, 400),
     ylims = (-5, -1),

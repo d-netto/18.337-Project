@@ -2,9 +2,11 @@ using PolyChaosODE,
     BenchmarkTools, DifferentialEquations, Distributions, LaTeXStrings, Plots
 
 ### Test based on the example provided at https://julia.quantecon.org/continuous_time/seir_model.html ###
-const _e_1 = rand(Uniform(0.0005, 0.001))
-const _e_2 = rand(Uniform(0.0005, 0.001))
-const _e_3 = rand(Uniform(0.0005, 0.001))
+
+# Values randomly sampled from Uniform(0.0005, 0.001)
+const _e_1 = 0.0005187461238971071
+const _e_2 = 0.0007294624156978437
+const _e_3 = 0.000980192256832965
 
 μ = 0.0
 σ = sqrt(2.0) / 2
@@ -72,7 +74,7 @@ sobol_indices_mc_20k = mc_gsa_estimate_total_indices(
 plot(
     interval_t[2:end],
     ((x, y) -> log10.(abs.(x .- y) ./ y)).(sobol_indices_pce, sobol_indices_mc_20k);
-    label = [L"err\left(\hat{S}_{1, 3}^{(PCE)}\right)" L"err\left(\hat{S}_{2, 3}^{(PCE)}\right)" L"err\left(\hat{S}_{3, 3}^{(PCE)}\right)" L"err\left(\hat{S}_{4, 3}^{(PCE)}\right)"],
+    label = [L"\log_{10} err\left(\hat{S}_{1, 3}^{(PCE)}\right)" L"\log_{10} err\left(\hat{S}_{2, 3}^{(PCE)}\right)" L"\log_{10} err\left(\hat{S}_{3, 3}^{(PCE)}\right)" L"\log_{10} err\left(\hat{S}_{4, 3}^{(PCE)}\right)"],
     legend = :outertopright,
     size = (500, 400),
     ylims = (-5, 0),
@@ -86,7 +88,7 @@ savefig("seir_pce.png")
 plot(
     interval_t[2:end],
     ((x, y) -> log10.(abs.(x .- y) ./ y)).(sobol_indices_mc_1k, sobol_indices_mc_20k),
-    label = [L"err\left(\hat{S}_{1, 3}^{(MC)}\right)" L"err\left(\hat{S}_{2, 3}^{(MC)}\right)" L"err\left(\hat{S}_{3, 3}^{(MC)}\right)" L"err\left(\hat{S}_{4, 3}^{(MC)}\right)"],
+    label = [L"\log_{10} err\left(\hat{S}_{1, 3}^{(MC)}\right)" L"\log_{10} err\left(\hat{S}_{2, 3}^{(MC)}\right)" L"\log_{10} err\left(\hat{S}_{3, 3}^{(MC)}\right)" L"\log_{10} err\left(\hat{S}_{4, 3}^{(MC)}\right)"],
     legend = :outertopright,
     size = (500, 400),
     ylims = (-5, 0),
