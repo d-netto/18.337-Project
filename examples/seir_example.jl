@@ -8,6 +8,8 @@ const _e_1 = 0.0005187461238971071
 const _e_2 = 0.0007294624156978437
 const _e_3 = 0.000980192256832965
 
+const VAR_INDEX = 3
+
 μ = 0.0
 σ = sqrt(2.0) / 2
 
@@ -39,8 +41,6 @@ tstep = 0.1
 interval_t = interval_t_start:tstep:tspan[2]
 
 sol = stoch_galerkin_ode(u0, tspan, p; alg = VCABM())
-
-const VAR_INDEX = 3
 
 sobol_indices_pce = mapreduce(
     transpose,
@@ -104,7 +104,7 @@ ylabel!(L"\log_{10}\left\vert \frac{\hat{S} - S}{S} \right\vert")
 @btime mc_gsa_estimate_total_indices(
     stoch_galerkin_ode,
     VAR_INDEX,
-    ONE_K,
+    1000,
     interval_t,
     u0,
     tspan,

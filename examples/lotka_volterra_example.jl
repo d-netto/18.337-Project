@@ -1,4 +1,4 @@
-using PolyChaosODE, BenchmarkTools, LaTeXStrings, DifferentialEquations, Distributions
+using PolyChaosODE, BenchmarkTools, LaTeXStrings, DifferentialEquations, Distributions, Plots
 
 ### Lotka-Volterra example ###
 
@@ -92,7 +92,7 @@ ylabel!(L"\log_{10}\left\vert \frac{\hat{S} - S}{S} \right\vert")
 @btime mc_gsa_estimate_total_indices(
     stoch_galerkin_ode,
     VAR_INDEX,
-    TEN_K,
+    10000,
     interval_t,
     u0,
     tspan,
