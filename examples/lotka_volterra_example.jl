@@ -60,7 +60,7 @@ sobol_indices_mc_100k = mc_gsa_estimate_total_indices(
 plot(
     interval_t[2:end],
     ((x, y) -> log10.(abs.(x .- y) ./ y)).(sobol_indices_pce, sobol_indices_mc_100k);
-    label = [L"err\left(\hat{S}_{1, 4}^{(PCE)}\right)" L"err\left(\hat{S}_{2, 4}^{(PCE)}\right)"],
+    label = [L"\log_{10} err\left(\hat{S}_{1, 4}^{(PCE)}\right)" L"\log_{10} err\left(\hat{S}_{2, 4}^{(PCE)}\right)"],
     legend = :outertopright,
     size = (500, 400),
     ylims = (-5, -1),
