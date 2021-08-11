@@ -45,7 +45,7 @@ for prob_dim = 1:max_dim
         compute_expectation_and_diag_variance(
             stoch_galerkin_ode,
             interval_t,
-            [sol(t) for t in interval_t],
+            [$sol(t) for t in interval_t],
         )[2],
     )
 end
