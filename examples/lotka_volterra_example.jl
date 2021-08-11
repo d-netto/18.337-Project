@@ -8,6 +8,8 @@ const e_2 = 0.080445347251208
 const e_3 = 0.08337864408351067
 const e_4 = 0.09539376797393989
 
+const VAR_INDEX = 4
+
 μ = 0.0
 σ = sqrt(2.0) / 2
 
@@ -69,7 +71,7 @@ plot(
 xlabel!(L"t")
 ylabel!(L"\log_{10}\left\vert \frac{\hat{S} - S}{S} \right\vert")
 
-savefig("lk_pce.png")
+# savefig("lk_pce.png")
 
 plot(
     interval_t[2:end],
@@ -83,7 +85,7 @@ plot(
 xlabel!(L"t")
 ylabel!(L"\log_{10}\left\vert \frac{\hat{S} - S}{S} \right\vert")
 
-savefig("lk_mc.png")
+# savefig("lk_mc.png")
 
 @btime stoch_galerkin_ode(u0, tspan, p; alg = VCABM())
 @btime compute_total_order_sobol_indices(stoch_galerkin_ode, sol, interval_t, VAR_INDEX)

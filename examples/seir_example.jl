@@ -83,7 +83,7 @@ plot(
 xlabel!(L"t")
 ylabel!(L"\log_{10}\left\vert \frac{\hat{S} - S}{S} \right\vert")
 
-savefig("seir_pce.png")
+# savefig("seir_pce.png")
 
 plot(
     interval_t[2:end],
@@ -97,7 +97,7 @@ plot(
 xlabel!(L"t")
 ylabel!(L"\log_{10}\left\vert \frac{\hat{S} - S}{S} \right\vert")
 
-savefig("seir_mc.png")
+# savefig("seir_mc.png")
 
 @btime stoch_galerkin_ode(u0, tspan, p; alg = VCABM())
 @btime compute_total_order_sobol_indices(stoch_galerkin_ode, sol, interval_t, VAR_INDEX)
