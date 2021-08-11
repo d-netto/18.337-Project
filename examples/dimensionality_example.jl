@@ -39,14 +39,13 @@ for prob_dim = 1:max_dim
     sol = stoch_galerkin_ode(u0, tspan, compartment)
     # after that, time it
     @time stoch_galerkin_ode(u0, tspan, compartment)
-    @btime arr = [sol(t) for t in interval_t]
     @btime (
         x -> sqrt.(x)
     ).(
         compute_expectation_and_diag_variance(
             stoch_galerkin_ode,
             interval_t,
-            $arr,
+            [$sol(t) for t in interval_t],
         )[2],
     )
 end
