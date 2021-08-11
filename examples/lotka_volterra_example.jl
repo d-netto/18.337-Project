@@ -1,4 +1,5 @@
-using PolyChaosODE, BenchmarkTools, LaTeXStrings, DifferentialEquations, Distributions, Plots
+using PolyChaosODE,
+    BenchmarkTools, LaTeXStrings, DifferentialEquations, Distributions, Plots
 
 ### Lotka-Volterra example ###
 

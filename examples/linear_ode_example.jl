@@ -1,10 +1,5 @@
 using PolyChaosODE,
-    Distributions,
-    DifferentialEquations,
-    LaTeXStrings,
-    LinearAlgebra,
-    Parameters,
-    Plots
+    Distributions, DifferentialEquations, LaTeXStrings, LinearAlgebra, Parameters, Plots
 
 ### Linear ODE example ###
 
