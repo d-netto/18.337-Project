@@ -4,13 +4,13 @@ using PolyChaosODE,
     LaTeXStrings,
     LinearAlgebra,
     Parameters,
-    Plots,
-    Test
+    Plots
 
 ### Linear ODE example ###
 
-const μ = 0.0
-const σ = sqrt(2.0) / 2
+μ = 0.0
+σ = sqrt(2.0) / 2
+
 prob_dim = 4
 
 struct ODEComp{T1,T2,T3}
