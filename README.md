@@ -1,6 +1,6 @@
 # Global Sensitivity Analysis via Polynomial Chaos Expansions
 
-Final project for 18.337 (Parallel Computing and Scientific Machine Learning) on the use of Polynomial Chaos Expansions (PCE) for performing Global Sensitivity Analysis.
+Final project for 18.337 (Parallel Computing and Scientific Machine Learning) on the use of Polynomial Chaos Expansions (PCE) to perform Global Sensitivity Analysis.
 
 Results can be reproduced by activating/instantiating the environment defined by `Project.toml` and running the files in `/examples`.
 
